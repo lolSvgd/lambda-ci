@@ -24,8 +24,8 @@ jobs:
             - node-deps-v1-
        # Install LambdaTest Cypress CLI globally
       - run:
-        name: "Install LambdaTest Cypress CLI"
-        command: sudo npm install -g lambdatest-cypress-cli
+          name: "Install LambdaTest Cypress CLI"
+          command: sudo npm install -g lambdatest-cypress-cli
 
       - run:
           name: "Install npm dependencies"
