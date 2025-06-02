@@ -1,0 +1,31 @@
+version: 2.1
+
+orbs:
+  cypress: cypress-io/cypress@10
+  lambda-tunnel: lambdatest/lambda-tunnel@0.0.1
+
+jobs:
+  test:
+    docker:
+      - image: circleci/node:latest
+    steps:
+      - checkout
+      - run:
+          name: "Setup LambdaTest environment variables"
+          command: |
+            echo 'export LT_USERNAME="${LT_USERNAME}"' >> $BASH_ENV
+            echo 'export LT_ACCESS_KEY="${LT_ACCESS_KEY}"' >> $BASH_ENV
+      - lambda-tunnel/with_tunnel:
+          tunnel_name: "lt-cypress-tunnel"
+          steps:
+            - run:
+                name: "Install dependencies"
+                command: npm install
+            - run:
+                name: "Run Cypress tests on LambdaTest"
+                command: lambdatest-cypress run
+
+workflows:
+  test_workflow:
+    jobs:
+      - test
