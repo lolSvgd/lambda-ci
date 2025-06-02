@@ -60,6 +60,17 @@ jobs:
             wget https://downloads.lambdatest.com/tunnel/v3/linux/64bit/LT_Linux.zip
             unzip LT_Linux.zip
       
+      # Start LambdaTest tunnel in background
+      - run:
+          name: "Start LambdaTest Tunnel"
+          command: |
+            ./LT --user ${LT_USERNAME} --key ${LT_ACCESS_KEY} --tunnelName "circleci-tunnel" --verbose
+          background: true
+      
+      # Wait for tunnel to establish
+      - run:
+          name: "Wait for tunnel connection"
+          command: sleep 30
       
       # Run Cypress tests on LambdaTest
       - run:
