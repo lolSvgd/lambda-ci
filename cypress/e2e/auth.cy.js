@@ -53,9 +53,7 @@ describe("Authentication Tests", () => {
     cy.register(testUser.username, testUser.email, testUser.password);
     cy.login(testUser.email, testUser.password);
 
-    cy.get('[data-cy="logout-button"]', { timeout: 15000 })
-      .should("be.visible")
-      .click();
+    cy.get('[data-cy="logout-button"]').click();
     cy.url().should("include", "/login");
     
   });
