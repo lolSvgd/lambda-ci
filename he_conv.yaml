@@ -1,0 +1,56 @@
+version: "0.1"
+globalTimeout: 90
+testSuiteTimeout: 90
+testSuiteStep: 90
+runson: ${matrix.os}
+cypress: true
+concurrency: 1
+jobLabel:
+  - heJob
+pre:
+  - npm install cypress@10.11.0 --legacy-peer-deps
+  - npm install cypress@10.11.0 --legacy-peer-deps
+cacheKey: '{{ checksum "package.lock.json" }}'
+cacheDirectories:
+  - node_modules
+  - cypressCache
+env:
+  CYPRESS_CACHE_FOLDER: cypressCache
+  HYPEREXECUTE_CUSTOM_BUILD: build-name
+matrix:
+  browser:
+    - Chrome-latest-1
+    - Firefox-latest-1
+    - Edge-latest-1
+    - Edge-latest-1
+    - Firefox-latest-1
+    - Chrome-latest-1
+  test:
+    - ./cypress/e2e/auth.cy.js
+  os:
+    - win
+    - win11
+    - mac13
+testSuites:
+  - npx cypress run --browser=$browser --headed --config video=false --spec $test
+cypressOps:
+  DedicatedProxy: false
+  Build: build-name
+  BuildTags: []
+  Tags: []
+  Network: false
+  GeoLocation: ""
+  ReporterConfigFile: base_reporter_config.json
+  ProjectAutoCreate: true
+uploadArtefacts: []
+project:
+  name: cypress_project
+  differentialUpload:
+    enabled: true
+    ttlHours: 60
+combineTasksInMatrixMode: true
+tunnelNames:
+  - 711d9853-709e-4456-955b-2ad0498f17f4
+runtime:
+  language: node
+  version: 16.18.1
