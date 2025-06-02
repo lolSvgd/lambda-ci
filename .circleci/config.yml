@@ -38,13 +38,12 @@ jobs:
           command: |
             wget https://downloads.lambdatest.com/tunnel/v3/linux/64bit/LT_Linux.zip
             unzip LT_Linux.zip
-            chmod +x LT_Linux
       
       # Start LambdaTest tunnel in background
       - run:
           name: "Start LambdaTest Tunnel"
           command: |
-            ./LambdaTestTunnel --user ${LT_USERNAME} --key ${LT_ACCESS_KEY} --tunnelName "circleci-tunnel" --verbose
+            ./LT --user ${LT_USERNAME} --key ${LT_ACCESS_KEY} --tunnelName "circleci-tunnel" --verbose
           background: true
       
       # Wait for tunnel to establish
