@@ -37,8 +37,8 @@ jobs:
           name: "Download and setup LambdaTest Tunnel"
           command: |
             wget https://downloads.lambdatest.com/tunnel/v3/linux/64bit/LT_Linux.zip
-            unzip LambdaTestTunnel.zip
-            chmod +x LambdaTestTunnel
+            unzip LT_Linux.zip
+            chmod +x LT_Linux
       
       # Start LambdaTest tunnel in background
       - run:
