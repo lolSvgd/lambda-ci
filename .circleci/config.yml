@@ -22,7 +22,11 @@ jobs:
             - node-deps-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
             - node-deps-v1-{{ .Branch }}-
             - node-deps-v1-
-      
+       # Install LambdaTest Cypress CLI globally
+      - run:
+          name: "Install LambdaTest Cypress CLI"
+          command: npm install -g lambdatest-cypress-cli
+          
       - run:
           name: "Install npm dependencies"
           command: npm ci
