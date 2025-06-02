@@ -35,6 +35,23 @@ jobs:
           key: node-deps-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
             - ~/.npm
+
+      - run:
+          name: "Build application"
+          command: npm run build
+      
+      - run:
+          name: "Start application server"
+          command: npm run dev 
+          background: true
+      
+      # Wait for application to be ready
+      - run:
+          name: "Wait for application to be ready"
+          command: |
+            echo "Waiting for application to start..."
+            timeout 60 bash -c 'until curl --output /dev/null --silent --head --fail http://localhost:5173; do printf "."; sleep 1; done'
+            echo "Application is ready!"
       
       # Install LambdaTest tunnel binary
       - run:
