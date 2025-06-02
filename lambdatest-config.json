@@ -61,6 +61,6 @@
    },
    "tunnel_settings": {
       "tunnel": true,
-      "tunnel_name": "711d9853-709e-4456-955b-2ad0498f17f4"
+      "tunnel_name": "circleci-tunnel"
    }
 }

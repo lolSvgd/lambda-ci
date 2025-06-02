@@ -75,13 +75,23 @@ jobs:
       # Run Cypress tests on LambdaTest
       - run:
           name: "Run Cypress tests on LambdaTest"
-          command: lambdatest-cypress run
+          command: |
+            set -e
+            echo "Starting Cypress tests..."
+            npx lambdatest-cypress run
+            TEST_RESULT=$?
+            echo "Test execution completed with exit code: $TEST_RESULT"
+            
+            if [ $TEST_RESULT -ne 0 ]; then
+              echo "Tests failed!"
+              exit $TEST_RESULT
+            else
+              echo "Tests passed!"
+            fi
       
-      # Store test results
       - store_test_results:
           path: cypress/results
       
-      # Store artifacts
       - store_artifacts:
           path: cypress/screenshots
           destination: screenshots
