@@ -1,29 +1,74 @@
 version: 2.1
 
-orbs:
-  cypress: cypress-io/cypress@4
-  lambda-tunnel: lambdatest/lambda-tunnel@0.0.1
-
 jobs:
   test:
     docker:
-      - image: circleci/node:latest
+      - image: cimg/node:18.17
+    working_directory: ~/project
     steps:
       - checkout
+      
+      # Set up environment variables
       - run:
           name: "Setup LambdaTest environment variables"
           command: |
             echo 'export LT_USERNAME="${LT_USERNAME}"' >> $BASH_ENV
             echo 'export LT_ACCESS_KEY="${LT_ACCESS_KEY}"' >> $BASH_ENV
-      - lambda-tunnel/with_tunnel:
-          tunnel_name: "lt-cypress-tunnel"
-          steps:
-            - run:
-                name: "Install dependencies"
-                command: npm install
-            - run:
-                name: "Run Cypress tests on LambdaTest"
-                command: lambdatest-cypress run
+            source $BASH_ENV
+      
+      # Install dependencies
+      - restore_cache:
+          keys:
+            - node-deps-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - node-deps-v1-{{ .Branch }}-
+            - node-deps-v1-
+      
+      - run:
+          name: "Install npm dependencies"
+          command: npm ci
+      
+      - save_cache:
+          key: node-deps-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          paths:
+            - ~/.npm
+      
+      # Install LambdaTest tunnel binary
+      - run:
+          name: "Download and setup LambdaTest Tunnel"
+          command: |
+            wget https://downloads.lambdatest.com/tunnel/v3/linux/64bit/LambdaTestTunnel.zip
+            unzip LambdaTestTunnel.zip
+            chmod +x LambdaTestTunnel
+      
+      # Start LambdaTest tunnel in background
+      - run:
+          name: "Start LambdaTest Tunnel"
+          command: |
+            ./LambdaTestTunnel --user ${LT_USERNAME} --key ${LT_ACCESS_KEY} --tunnelName "circleci-tunnel" --verbose
+          background: true
+      
+      # Wait for tunnel to establish
+      - run:
+          name: "Wait for tunnel connection"
+          command: sleep 30
+      
+      # Run Cypress tests on LambdaTest
+      - run:
+          name: "Run Cypress tests on LambdaTest"
+          command: lambdatest-cypress run
+      
+      # Store test results
+      - store_test_results:
+          path: cypress/results
+      
+      # Store artifacts
+      - store_artifacts:
+          path: cypress/screenshots
+          destination: screenshots
+      
+      - store_artifacts:
+          path: cypress/videos
+          destination: videos
 
 workflows:
   test_workflow:
